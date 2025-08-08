@@ -10,8 +10,9 @@ import (
 	"time"
 
 	"gin-service/internal/config"
-	"gin-service/internal/handler"
 	"gin-service/internal/middleware"
+	"gin-service/internal/resources/health"
+	"gin-service/internal/resources/product"
 	"gin-service/internal/server"
 
 	"github.com/gin-gonic/gin"
@@ -37,17 +38,37 @@ func main() {
 	router.Use(middleware.Recovery())
 	router.Use(middleware.CORS())
 
+	// Initialize repositories
+	healthRepo := health.NewHealthRepository()
+	productRepo := product.NewProductRepository()
+
+	// Initialize services
+	healthService := health.NewHealthService(healthRepo)
+	productService := product.NewProductService(productRepo)
+
 	// Initialize handlers
-	healthHandler := handler.NewHealthHandler()
+	healthHandler := health.NewHealthHandler(healthService)
+	productHandler := product.NewProductHandler(productService)
 
 	// Setup routes
 	api := router.Group("/api/v1")
 	{
-		health := api.Group("/health")
+		// Health endpoints
+		healthGroup := api.Group("/health")
 		{
-			health.GET("", healthHandler.GetHealth)
-			health.GET("/ready", healthHandler.GetReadiness)
-			health.GET("/live", healthHandler.GetLiveness)
+			healthGroup.GET("", healthHandler.GetHealth)
+			healthGroup.GET("/ready", healthHandler.GetReadiness)
+			healthGroup.GET("/live", healthHandler.GetLiveness)
+		}
+
+		// Product endpoints
+		productGroup := api.Group("/products")
+		{
+			productGroup.POST("", productHandler.CreateProduct)
+			productGroup.GET("", productHandler.GetAllProducts)
+			productGroup.GET("/:id", productHandler.GetProduct)
+			productGroup.PUT("/:id", productHandler.UpdateProduct)
+			productGroup.DELETE("/:id", productHandler.DeleteProduct)
 		}
 	}
 

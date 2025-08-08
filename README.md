@@ -12,12 +12,24 @@ gin-service/
 ├── internal/
 │   ├── config/
 │   │   └── config.go        # Configuration management
-│   ├── handler/
-│   │   └── health.go        # Health check handlers
 │   ├── middleware/
 │   │   └── middleware.go    # HTTP middleware
-│   └── server/
-│       └── server.go        # HTTP server configuration
+│   ├── server/
+│   │   └── server.go        # HTTP server configuration
+│   └── resources/           # Resource-based modules
+│       ├── health/          # Health check resource
+│       │   ├── interfaces.go # Service & Repository interfaces
+│       │   ├── models.go     # Request/Response models
+│       │   ├── repository.go # Data access layer
+│       │   ├── service.go    # Business logic layer
+│       │   ├── handler.go    # HTTP request handling
+│       │   └── service_test.go # Unit tests
+│       └── product/         # Product resource
+│           ├── interfaces.go # Service & Repository interfaces
+│           ├── models.go     # Request/Response models
+│           ├── repository.go # Data access layer
+│           ├── service.go    # Business logic layer
+│           └── handler.go    # HTTP request handling
 ├── configs/
 │   └── config.yaml          # Configuration file
 ├── go.mod                   # Go module file
@@ -26,7 +38,10 @@ gin-service/
 
 ## Features
 
+- **Modular Architecture**: Resource-based organization with clear separation of concerns
+- **Interface-Based Design**: Easy dependency injection and unit testing
 - **Health Check Endpoints**: `/api/v1/health`, `/api/v1/health/ready`, `/api/v1/health/live`
+- **Product Management**: Full CRUD operations for products with validation
 - **Configuration Management**: Using Viper for flexible configuration
 - **Middleware**: Logging, Recovery, and CORS middleware
 - **Graceful Shutdown**: Proper signal handling and graceful server shutdown
@@ -80,7 +95,31 @@ Example response:
   "status": "healthy",
   "timestamp": "2024-01-01T12:00:00Z",
   "service": "gin-service",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "details": {
+    "database": "healthy",
+    "external_services": ["all services healthy"],
+    "uptime": "1h30m45s"
+  }
+}
+```
+
+#### Product Management
+- `POST /api/v1/products` - Create a new product
+- `GET /api/v1/products` - Get all products (with pagination)
+- `GET /api/v1/products/:id` - Get a specific product
+- `PUT /api/v1/products/:id` - Update a product
+- `DELETE /api/v1/products/:id` - Delete a product
+
+Example product creation:
+```json
+POST /api/v1/products
+{
+  "name": "Test Product",
+  "description": "A test product",
+  "price": 29.99,
+  "category": "Electronics",
+  "stock": 10
 }
 ```
 
@@ -101,18 +140,37 @@ go run cmd/server/main.go
 
 ## Development
 
-### Project Structure Explanation
+### Architecture Explanation
 
-- **`cmd/`**: Contains the main applications of the project
-- **`internal/`**: Private application and library code
-- **`configs/`**: Configuration files
-- **`pkg/`**: Library code that's ok to use by external applications (not used in this simple example)
+#### **Layered Architecture**
+- **Handler Layer**: HTTP request/response handling, validation, and routing
+- **Service Layer**: Business logic, orchestration, and domain rules
+- **Repository Layer**: Data access and persistence logic
+- **Interface Layer**: Contracts for dependency injection and testing
 
-### Adding New Endpoints
+#### **Resource-Based Organization**
+Each resource (health, product, etc.) has its own folder with:
+- `interfaces.go`: Service and Repository interfaces
+- `models.go`: Request/Response data structures
+- `repository.go`: Data access implementation
+- `service.go`: Business logic implementation
+- `handler.go`: HTTP handling implementation
+- `*_test.go`: Unit tests
 
-1. Create a new handler in `internal/handler/`
-2. Add the route in `cmd/server/main.go`
-3. Follow the existing patterns for consistency
+#### **Benefits**
+- **Separation of Concerns**: Each layer has a single responsibility
+- **Testability**: Interfaces enable easy mocking and unit testing
+- **Maintainability**: Clear structure makes code easy to understand and modify
+- **Scalability**: Easy to add new resources following the same pattern
+- **Dependency Injection**: Services depend on interfaces, not concrete implementations
+
+### Adding New Resources
+
+1. Create a new folder in `internal/resources/` (e.g., `user/`)
+2. Create the required files: `interfaces.go`, `models.go`, `repository.go`, `service.go`, `handler.go`
+3. Implement the interfaces following the existing patterns
+4. Add routes in `cmd/server/main.go`
+5. Add unit tests for each layer
 
 ## License
 
