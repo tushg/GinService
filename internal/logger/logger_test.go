@@ -3,18 +3,17 @@ package logger
 import (
 	"context"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestLogger_Levels(t *testing.T) {
 	config := &Config{
-		Level:      InfoLevel,
-		Format:     "json",
-		Output:     "stdout",
-		AddCaller:  false,
-		AddStack:   false,
+		Level:     InfoLevel,
+		Format:    "json",
+		Output:    "stdout",
+		AddCaller: false,
+		AddStack:  false,
 	}
 
 	log, err := NewLogger(config)
@@ -32,11 +31,11 @@ func TestLogger_Levels(t *testing.T) {
 
 func TestLogger_WithFields(t *testing.T) {
 	config := &Config{
-		Level:      DebugLevel,
-		Format:     "text",
-		Output:     "stdout",
-		AddCaller:  false,
-		AddStack:   false,
+		Level:     DebugLevel,
+		Format:    "text",
+		Output:    "stdout",
+		AddCaller: false,
+		AddStack:  false,
 	}
 
 	log, err := NewLogger(config)
@@ -55,11 +54,11 @@ func TestLogger_WithFields(t *testing.T) {
 
 func TestLogger_WithContext(t *testing.T) {
 	config := &Config{
-		Level:      InfoLevel,
-		Format:     "json",
-		Output:     "stdout",
-		AddCaller:  false,
-		AddStack:   false,
+		Level:     InfoLevel,
+		Format:    "json",
+		Output:    "stdout",
+		AddCaller: false,
+		AddStack:  false,
 	}
 
 	log, err := NewLogger(config)

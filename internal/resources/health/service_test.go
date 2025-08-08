@@ -32,7 +32,7 @@ func (m *MockHealthRepository) CheckExternalServices(ctx context.Context) error 
 func TestHealthService_GetHealth(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockHealthRepository)
-	service := NewHealthService(mockRepo)
+	service := NewHealthService(mockRepo, nil)
 	ctx := context.Background()
 
 	expectedStatus := &SystemStatus{
@@ -64,7 +64,7 @@ func TestHealthService_GetHealth(t *testing.T) {
 func TestHealthService_GetReadiness(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockHealthRepository)
-	service := NewHealthService(mockRepo)
+	service := NewHealthService(mockRepo, nil)
 	ctx := context.Background()
 
 	expectedStatus := &SystemStatus{
@@ -92,7 +92,7 @@ func TestHealthService_GetReadiness(t *testing.T) {
 func TestHealthService_GetLiveness(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockHealthRepository)
-	service := NewHealthService(mockRepo)
+	service := NewHealthService(mockRepo, nil)
 	ctx := context.Background()
 
 	expectedStatus := &SystemStatus{

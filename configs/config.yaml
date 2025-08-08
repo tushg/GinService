@@ -13,3 +13,15 @@ log:
   compress: true
   add_caller: true
   add_stack: false
+
+database:
+  type: "postgresql"
+  host: "localhost"
+  port: 5432
+  username: "postgres"
+  password: "password"
+  database: "gin_service"
+  ssl_mode: "disable"
+  max_connections: 10
+  max_idle_connections: 5
+  connection_timeout: "30s"
