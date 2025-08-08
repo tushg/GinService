@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"gin-service/internal/logger"
 	"github.com/spf13/viper"
 )
 
@@ -22,16 +21,16 @@ type ServerConfig struct {
 
 // LogConfig holds logging configuration
 type LogConfig struct {
-	Level      logger.Level `mapstructure:"level"`
-	Format     string       `mapstructure:"format"`
-	Output     string       `mapstructure:"output"`
-	FilePath   string       `mapstructure:"file_path"`
-	MaxSize    int          `mapstructure:"max_size"`
-	MaxBackups int          `mapstructure:"max_backups"`
-	MaxAge     int          `mapstructure:"max_age"`
-	Compress   bool         `mapstructure:"compress"`
-	AddCaller  bool         `mapstructure:"add_caller"`
-	AddStack   bool         `mapstructure:"add_stack"`
+	Level      string `mapstructure:"level"`
+	Format     string `mapstructure:"format"`
+	Output     string `mapstructure:"output"`
+	FilePath   string `mapstructure:"file_path"`
+	MaxSize    int    `mapstructure:"max_size"`
+	MaxBackups int    `mapstructure:"max_backups"`
+	MaxAge     int    `mapstructure:"max_age"`
+	Compress   bool   `mapstructure:"compress"`
+	AddCaller  bool   `mapstructure:"add_caller"`
+	AddStack   bool   `mapstructure:"add_stack"`
 }
 
 // Load reads configuration from file or environment variables

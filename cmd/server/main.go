@@ -26,9 +26,26 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
+	// Convert string level to logger.Level
+	var logLevel logger.Level
+	switch cfg.Log.Level {
+	case "debug":
+		logLevel = logger.DebugLevel
+	case "info":
+		logLevel = logger.InfoLevel
+	case "warn":
+		logLevel = logger.WarnLevel
+	case "error":
+		logLevel = logger.ErrorLevel
+	case "fatal":
+		logLevel = logger.FatalLevel
+	default:
+		logLevel = logger.InfoLevel
+	}
+
 	// Initialize logger
 	logConfig := &logger.Config{
-		Level:      cfg.Log.Level,
+		Level:      logLevel,
 		Format:     cfg.Log.Format,
 		Output:     cfg.Log.Output,
 		FilePath:   cfg.Log.FilePath,

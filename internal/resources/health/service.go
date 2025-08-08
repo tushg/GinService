@@ -24,7 +24,7 @@ func NewHealthService(repository HealthRepository, log logger.Logger) HealthServ
 // GetHealth handles general health check business logic
 func (s *healthService) GetHealth(ctx context.Context) (*HealthResponse, error) {
 	s.logger.Debug(ctx, "Health check requested", logger.Fields{})
-	
+
 	// Get system status from repository
 	systemStatus, err := s.repository.GetSystemStatus(ctx)
 	if err != nil {
