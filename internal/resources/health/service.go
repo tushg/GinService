@@ -46,7 +46,7 @@ func (s *healthService) GetHealth(ctx context.Context) (*HealthResponse, error) 
 			Service:   "gin-service",
 			Version:   systemStatus.Version,
 			Details: &HealthDetails{
-				Database: "healthy",
+				Database:         "healthy",
 				ExternalServices: []string{"some services unavailable"},
 			},
 		}, nil
@@ -58,9 +58,9 @@ func (s *healthService) GetHealth(ctx context.Context) (*HealthResponse, error) 
 		Service:   "gin-service",
 		Version:   systemStatus.Version,
 		Details: &HealthDetails{
-			Database: "healthy",
+			Database:         "healthy",
 			ExternalServices: []string{"all services healthy"},
-			Uptime:   time.Since(systemStatus.Uptime).String(),
+			Uptime:           time.Since(systemStatus.Uptime).String(),
 		},
 	}, nil
 }
