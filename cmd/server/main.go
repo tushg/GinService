@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"gin-service/internal/config"
+	"gin-service/internal/logger"
 	"gin-service/internal/middleware"
 	"gin-service/internal/resources/health"
 	"gin-service/internal/resources/product"
@@ -25,6 +26,25 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
+	// Initialize logger
+	logConfig := &logger.Config{
+		Level:      cfg.Log.Level,
+		Format:     cfg.Log.Format,
+		Output:     cfg.Log.Output,
+		FilePath:   cfg.Log.FilePath,
+		MaxSize:    cfg.Log.MaxSize,
+		MaxBackups: cfg.Log.MaxBackups,
+		MaxAge:     cfg.Log.MaxAge,
+		Compress:   cfg.Log.Compress,
+		AddCaller:  cfg.Log.AddCaller,
+		AddStack:   cfg.Log.AddStack,
+	}
+
+	appLogger, err := logger.NewLogger(logConfig)
+	if err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
+	}
+
 	// Set Gin mode
 	if cfg.Server.Mode == "release" {
 		gin.SetMode(gin.ReleaseMode)
@@ -34,7 +54,7 @@ func main() {
 	router := gin.New()
 
 	// Add middleware
-	router.Use(middleware.Logger())
+	router.Use(logger.RequestLogger(appLogger))
 	router.Use(middleware.Recovery())
 	router.Use(middleware.CORS())
 
@@ -43,7 +63,7 @@ func main() {
 	productRepo := product.NewProductRepository()
 
 	// Initialize services
-	healthService := health.NewHealthService(healthRepo)
+	healthService := health.NewHealthService(healthRepo, appLogger)
 	productService := product.NewProductService(productRepo)
 
 	// Initialize handlers
@@ -77,9 +97,14 @@ func main() {
 
 	// Start server in a goroutine
 	go func() {
-		log.Printf("Starting server on port %s", cfg.Server.Port)
+		appLogger.Info(context.Background(), "Starting server", logger.Fields{
+			"port": cfg.Server.Port,
+			"mode": cfg.Server.Mode,
+		})
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Failed to start server: %v", err)
+			appLogger.Fatal(context.Background(), "Failed to start server", err, logger.Fields{
+				"port": cfg.Server.Port,
+			})
 		}
 	}()
 
@@ -87,7 +112,7 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutting down server...")
+	appLogger.Info(context.Background(), "Shutting down server", logger.Fields{})
 
 	// Create a deadline for server shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -95,8 +120,8 @@ func main() {
 
 	// Attempt graceful shutdown
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
+		appLogger.Fatal(context.Background(), "Server forced to shutdown", err, logger.Fields{})
 	}
 
-	log.Println("Server exiting")
+	appLogger.Info(context.Background(), "Server exited", logger.Fields{})
 }

@@ -1,3 +1,15 @@
 server:
   port: "8080"
   mode: "debug"
+
+log:
+  level: "info"
+  format: "json"
+  output: "stdout"
+  file_path: "logs/app.log"
+  max_size: 100
+  max_backups: 3
+  max_age: 28
+  compress: true
+  add_caller: true
+  add_stack: false
