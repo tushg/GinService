@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"gin-service/internal/logger"
+	"gin-service/pkg/logger"
 )
 
 // healthService implements HealthService interface

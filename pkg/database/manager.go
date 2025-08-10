@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"gin-service/internal/config"
-	"gin-service/internal/database/postgresql"
+	"gin-service/pkg/config"
+	"gin-service/pkg/database/postgresql"
 )
 
 // Manager manages database connections and repositories

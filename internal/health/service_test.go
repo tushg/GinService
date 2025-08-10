@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"gin-service/pkg/logger"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -13,6 +15,15 @@ import (
 type MockHealthRepository struct {
 	mock.Mock
 }
+
+// MockLogger is a mock implementation of logger.Logger
+type MockLogger struct{}
+
+func (m *MockLogger) Debug(ctx context.Context, message string, fields logger.Fields)            {}
+func (m *MockLogger) Info(ctx context.Context, message string, fields logger.Fields)             {}
+func (m *MockLogger) Warn(ctx context.Context, message string, fields logger.Fields)             {}
+func (m *MockLogger) Error(ctx context.Context, message string, err error, fields logger.Fields) {}
+func (m *MockLogger) Fatal(ctx context.Context, message string, err error, fields logger.Fields) {}
 
 func (m *MockHealthRepository) GetSystemStatus(ctx context.Context) (*SystemStatus, error) {
 	args := m.Called(ctx)
@@ -32,7 +43,8 @@ func (m *MockHealthRepository) CheckExternalServices(ctx context.Context) error 
 func TestHealthService_GetHealth(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockHealthRepository)
-	service := NewHealthService(mockRepo, nil)
+	mockLogger := new(MockLogger)
+	service := NewHealthService(mockRepo, mockLogger)
 	ctx := context.Background()
 
 	expectedStatus := &SystemStatus{
@@ -64,7 +76,8 @@ func TestHealthService_GetHealth(t *testing.T) {
 func TestHealthService_GetReadiness(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockHealthRepository)
-	service := NewHealthService(mockRepo, nil)
+	mockLogger := new(MockLogger)
+	service := NewHealthService(mockRepo, mockLogger)
 	ctx := context.Background()
 
 	expectedStatus := &SystemStatus{
@@ -92,7 +105,8 @@ func TestHealthService_GetReadiness(t *testing.T) {
 func TestHealthService_GetLiveness(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockHealthRepository)
-	service := NewHealthService(mockRepo, nil)
+	mockLogger := new(MockLogger)
+	service := NewHealthService(mockRepo, mockLogger)
 	ctx := context.Background()
 
 	expectedStatus := &SystemStatus{
